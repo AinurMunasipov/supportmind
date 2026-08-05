@@ -1,0 +1,1 @@
+"""SupportMind API application package."""
