@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.memory import router as memory_router
 from app.db.database import init_db
 
 
@@ -13,6 +14,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="SupportMind API", lifespan=lifespan)
+app.include_router(memory_router)
 
 
 @app.get("/")
