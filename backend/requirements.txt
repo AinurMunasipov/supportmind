@@ -1,6 +1,7 @@
 fastapi
 uvicorn
-sqlalchemy
+sqlalchemy>=2,<3
+sqlalchemy-cockroachdb>=2,<3
 psycopg[binary]
 python-dotenv
 openai
