@@ -3,6 +3,7 @@ uvicorn
 sqlalchemy>=2,<3
 sqlalchemy-cockroachdb>=2,<3
 psycopg[binary]
+pgvector
 python-dotenv
 openai
 pydantic

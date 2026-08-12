@@ -9,8 +9,14 @@ def create_memory(
     user_id: str,
     role: str,
     content: str,
+    embedding: list[float],
 ) -> Memory:
-    memory = Memory(user_id=user_id, role=role, content=content)
+    memory = Memory(
+        user_id=user_id,
+        role=role,
+        content=content,
+        embedding=embedding,
+    )
     db.add(memory)
     db.commit()
     db.refresh(memory)
