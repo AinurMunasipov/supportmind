@@ -4,33 +4,21 @@ from sqlalchemy.orm import Session
 from app.core.config import OPENAI_API_KEY
 from app.core.prompts import SUPPORTMIND_SYSTEM_PROMPT
 from app.services.memory_service import MemoryService
+from app.services.prompt_builder import PromptBuilder
 
 
 class ChatService:
     def __init__(self, db: Session) -> None:
         self._client = OpenAI(api_key=OPENAI_API_KEY)
         self._memory_service = MemoryService(db)
+        self._prompt_builder = PromptBuilder()
 
     def generate_response(self, user_id: str, message: str) -> str:
         memories = self._memory_service.load_memories(user_id)
-        messages = [
-            {
-                "role": "system",
-                "content": SUPPORTMIND_SYSTEM_PROMPT,
-            }
-        ]
-        messages.extend(
-            {
-                "role": memory.role,
-                "content": memory.content,
-            }
-            for memory in sorted(memories, key=lambda memory: memory.created_at)
-        )
-        messages.append(
-            {
-                "role": "user",
-                "content": message,
-            }
+        messages = self._prompt_builder.build_messages(
+            system_prompt=SUPPORTMIND_SYSTEM_PROMPT,
+            memories=memories,
+            user_message=message,
         )
 
         completion = self._client.chat.completions.create(
