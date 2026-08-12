@@ -40,6 +40,20 @@ class MemoryService:
             user_id=user_id,
         )
 
+    def search_memories(
+        self,
+        user_id: str,
+        query: str,
+        limit: int = 5,
+    ) -> list[Memory]:
+        embedding = self._embedding_service.generate_embedding(query)
+        return memory_repository.search_similar_memories(
+            db=self._db,
+            user_id=user_id,
+            embedding=embedding,
+            limit=limit,
+        )
+
     def clear_memories(self, user_id: str) -> list[Memory]:
         return memory_repository.delete_user_memories(
             db=self._db,
