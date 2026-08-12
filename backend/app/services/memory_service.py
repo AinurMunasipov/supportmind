@@ -40,6 +40,17 @@ class MemoryService:
             user_id=user_id,
         )
 
+    def recent_memories(
+        self,
+        user_id: str,
+        limit: int = 6,
+    ) -> list[Memory]:
+        return memory_repository.get_recent_memories(
+            db=self._db,
+            user_id=user_id,
+            limit=limit,
+        )
+
     def search_memories(
         self,
         user_id: str,

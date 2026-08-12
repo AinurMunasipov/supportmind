@@ -28,6 +28,20 @@ def get_user_memories(db: Session, user_id: str) -> list[Memory]:
     return list(db.scalars(statement).all())
 
 
+def get_recent_memories(
+    db: Session,
+    user_id: str,
+    limit: int = 6,
+) -> list[Memory]:
+    statement = (
+        select(Memory)
+        .where(Memory.user_id == user_id)
+        .order_by(Memory.created_at.desc())
+        .limit(limit)
+    )
+    return list(db.scalars(statement).all())
+
+
 def search_similar_memories(
     db: Session,
     user_id: str,

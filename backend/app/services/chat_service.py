@@ -14,7 +14,13 @@ class ChatService:
         self._prompt_builder = PromptBuilder()
 
     def generate_response(self, user_id: str, message: str) -> str:
-        memories = self._memory_service.search_memories(user_id, message)
+        recent_memories = self._memory_service.recent_memories(user_id)
+        similar_memories = self._memory_service.search_memories(user_id, message)
+        memories_by_id = {
+            memory.id: memory
+            for memory in [*recent_memories, *similar_memories]
+        }
+        memories = list(memories_by_id.values())
         messages = self._prompt_builder.build_messages(
             system_prompt=SUPPORTMIND_SYSTEM_PROMPT,
             memories=memories,
