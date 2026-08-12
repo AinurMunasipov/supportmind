@@ -2,6 +2,7 @@ from openai import OpenAI
 from sqlalchemy.orm import Session
 
 from app.core.config import OPENAI_API_KEY
+from app.core.prompts import SUPPORTMIND_SYSTEM_PROMPT
 from app.services.memory_service import MemoryService
 
 
@@ -14,11 +15,17 @@ class ChatService:
         memories = self._memory_service.load_memories(user_id)
         messages = [
             {
+                "role": "system",
+                "content": SUPPORTMIND_SYSTEM_PROMPT,
+            }
+        ]
+        messages.extend(
+            {
                 "role": memory.role,
                 "content": memory.content,
             }
             for memory in sorted(memories, key=lambda memory: memory.created_at)
-        ]
+        )
         messages.append(
             {
                 "role": "user",
