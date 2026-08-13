@@ -14,23 +14,28 @@ class MCPService:
         words = normalized_message.split()
 
         if "table" in words or "tables" in words:
-            return [
-                ToolResult(
-                    tool="list_tables",
-                    success=True,
-                    content="""
+            return [self._list_tables()]
+
+        if "schema" in words:
+            return [self._get_table_schema()]
+
+        return []
+
+    def _list_tables(self) -> ToolResult:
+        return ToolResult(
+            tool="list_tables",
+            success=True,
+            content="""
 Available tables:
 - memories
 """.strip(),
-                )
-            ]
+        )
 
-        if "schema" in words:
-            return [
-                ToolResult(
-                    tool="get_table_schema",
-                    success=True,
-                    content="""
+    def _get_table_schema(self) -> ToolResult:
+        return ToolResult(
+            tool="get_table_schema",
+            success=True,
+            content="""
 Table memories:
 
 id
@@ -40,7 +45,4 @@ content
 embedding
 created_at
 """.strip(),
-                )
-            ]
-
-        return []
+        )
