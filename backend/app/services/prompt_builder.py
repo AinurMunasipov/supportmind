@@ -1,4 +1,5 @@
 from app.models.memory import Memory
+from app.services.mcp_service import ToolResult
 
 
 class PromptBuilder:
@@ -7,7 +8,7 @@ class PromptBuilder:
         system_prompt: str,
         recent_memories: list[Memory],
         relevant_memories: list[Memory],
-        tool_results: list[str],
+        tool_results: list[ToolResult],
         user_message: str,
     ) -> list[dict]:
         recent_context = "\n".join(
@@ -24,7 +25,10 @@ class PromptBuilder:
                 key=lambda memory: memory.created_at,
             )
         )
-        tool_context = "\n".join(tool_results)
+        tool_context = "\n".join(
+            result.content
+            for result in tool_results
+        )
         context = (
             f"{system_prompt.rstrip()}\n\n"
             f"=== Recent Conversation ===\n\n"
