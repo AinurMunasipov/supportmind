@@ -5,6 +5,7 @@ from app.core.config import OPENAI_API_KEY
 from app.core.prompts import SUPPORTMIND_SYSTEM_PROMPT
 from app.services.memory_decision_service import MemoryDecisionService
 from app.services.memory_service import MemoryService
+from app.services.memory_storage_decision_service import MemoryStorageDecisionService
 from app.services.prompt_builder import PromptBuilder
 
 
@@ -13,6 +14,7 @@ class ChatService:
         self._client = OpenAI(api_key=OPENAI_API_KEY)
         self._memory_decision_service = MemoryDecisionService()
         self._memory_service = MemoryService(db)
+        self._memory_storage_decision_service = MemoryStorageDecisionService()
         self._prompt_builder = PromptBuilder()
 
     def generate_response(self, user_id: str, message: str) -> str:
@@ -36,11 +38,12 @@ class ChatService:
         )
         assistant_response = completion.choices[0].message.content or ""
 
-        self._memory_service.save_memory(user_id, "user", message)
-        self._memory_service.save_memory(
-            user_id,
-            "assistant",
-            assistant_response,
-        )
+        if self._memory_storage_decision_service.should_store_memory(message):
+            self._memory_service.save_memory(user_id, "user", message)
+            self._memory_service.save_memory(
+                user_id,
+                "assistant",
+                assistant_response,
+            )
 
         return assistant_response
