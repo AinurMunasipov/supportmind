@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import OPENAI_API_KEY
 from app.core.prompts import SUPPORTMIND_SYSTEM_PROMPT
+from app.services.memory_decision_service import MemoryDecisionService
 from app.services.memory_service import MemoryService
 from app.services.prompt_builder import PromptBuilder
 
@@ -10,16 +11,22 @@ from app.services.prompt_builder import PromptBuilder
 class ChatService:
     def __init__(self, db: Session) -> None:
         self._client = OpenAI(api_key=OPENAI_API_KEY)
+        self._memory_decision_service = MemoryDecisionService()
         self._memory_service = MemoryService(db)
         self._prompt_builder = PromptBuilder()
 
     def generate_response(self, user_id: str, message: str) -> str:
         recent_memories = self._memory_service.recent_memories(user_id)
-        similar_memories = self._memory_service.search_memories(user_id, message)
+        relevant_memories = []
+        if self._memory_decision_service.should_search_memories(message):
+            relevant_memories = self._memory_service.search_memories(
+                user_id,
+                message,
+            )
         messages = self._prompt_builder.build_messages(
             system_prompt=SUPPORTMIND_SYSTEM_PROMPT,
             recent_memories=recent_memories,
-            relevant_memories=similar_memories,
+            relevant_memories=relevant_memories,
             user_message=message,
         )
 
