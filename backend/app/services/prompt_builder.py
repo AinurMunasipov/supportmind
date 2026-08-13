@@ -7,6 +7,7 @@ class PromptBuilder:
         system_prompt: str,
         recent_memories: list[Memory],
         relevant_memories: list[Memory],
+        tool_results: list[str],
         user_message: str,
     ) -> list[dict]:
         recent_context = "\n".join(
@@ -23,12 +24,15 @@ class PromptBuilder:
                 key=lambda memory: memory.created_at,
             )
         )
+        tool_context = "\n".join(tool_results)
         context = (
             f"{system_prompt.rstrip()}\n\n"
             f"=== Recent Conversation ===\n\n"
             f"{recent_context}\n\n"
             f"=== Relevant Memories ===\n\n"
-            f"{relevant_context}"
+            f"{relevant_context}\n\n"
+            f"=== Tool Results ===\n\n"
+            f"{tool_context}"
         )
 
         return [

@@ -27,13 +27,12 @@ class ChatService:
                 user_id,
                 message,
             )
-        # Future CockroachDB Managed MCP integration point; tool results will be
-        # passed to PromptBuilder in a later milestone.
         tool_results = self._mcp_service.execute(user_id, message)
         messages = self._prompt_builder.build_messages(
             system_prompt=SUPPORTMIND_SYSTEM_PROMPT,
             recent_memories=recent_memories,
             relevant_memories=relevant_memories,
+            tool_results=tool_results,
             user_message=message,
         )
 
