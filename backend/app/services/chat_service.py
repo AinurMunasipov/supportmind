@@ -30,18 +30,19 @@ class ChatService:
                 message,
             )
         if self._mcp_decision_service.should_use_mcp(message):
-            tool_results = self._mcp_service.execute(
+            mcp_results = self._mcp_service.execute(
                 user_id,
                 message,
             )
         else:
-            tool_results = []
+            mcp_results = []
         messages = self._prompt_builder.build_messages(
             system_prompt=SUPPORTMIND_SYSTEM_PROMPT,
             recent_memories=recent_memories,
             relevant_memories=relevant_memories,
-            tool_results=tool_results,
+            tool_results=mcp_results,
             user_message=message,
+            mcp_results=mcp_results,
         )
 
         completion = self._client.chat.completions.create(

@@ -10,6 +10,7 @@ class PromptBuilder:
         relevant_memories: list[Memory],
         tool_results: list[ToolResult],
         user_message: str,
+        mcp_results: list[ToolResult] | None = None,
     ) -> list[dict]:
         recent_context = "\n".join(
             f"{memory.role}: {memory.content}"
@@ -38,6 +39,17 @@ class PromptBuilder:
             f"=== Tool Results ===\n\n"
             f"{tool_context}"
         )
+        if mcp_results:
+            mcp_context = "\n\n".join(
+                (
+                    f"Tool: {result.tool}\n"
+                    f"Success: {result.success}\n"
+                    f"Content:\n{result.content}"
+                )
+                for result in mcp_results
+                if result.success
+            )
+            context += f"\n\n=== MCP Results ===\n\n{mcp_context}"
 
         return [
             {
