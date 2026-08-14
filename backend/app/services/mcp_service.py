@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 
@@ -17,15 +19,40 @@ class MCPService:
     def _dispatch(self, words: list[str]) -> list[ToolResult]:
         if "table" in words or "tables" in words:
             cluster_results = self._list_clusters()
-            cluster_name = cluster_results[0].content
+            cluster_result = self._get_first_success(cluster_results)
+            cluster_name = self._get_content(cluster_result)
+            if cluster_name is None:
+                return []
+
             database_results = self._list_databases(cluster_name)
-            database_name = database_results[0].content
-            return self._list_tables(cluster_name, database_name)
+            database_result = self._get_first_success(database_results)
+            database_name = self._get_content(database_result)
+            if database_name is None:
+                return []
+
+            table_results = self._list_tables(cluster_name, database_name)
+            table_result = self._get_first_success(table_results)
+            if table_result is None:
+                return []
+
+            return [table_result]
 
         if "schema" in words:
             return [self._get_table_schema()]
 
         return []
+
+    def _get_first_success(
+        self,
+        results: list[ToolResult],
+    ) -> ToolResult | None:
+        return next(
+            (result for result in results if result.success),
+            None,
+        )
+
+    def _get_content(self, result: ToolResult | None) -> str | None:
+        return result.content if result is not None else None
 
     def _list_clusters(self) -> list[ToolResult]:
         return [
