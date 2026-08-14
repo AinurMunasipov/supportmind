@@ -12,7 +12,9 @@ class MCPService:
     def execute(self, user_id: str, message: str) -> list[ToolResult]:
         normalized_message = message.strip().lower()
         words = normalized_message.split()
+        return self._dispatch(words)
 
+    def _dispatch(self, words: list[str]) -> list[ToolResult]:
         if "table" in words or "tables" in words:
             return [self._list_tables()]
 
