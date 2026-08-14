@@ -183,6 +183,24 @@ class MCPService:
 
         return parsed
 
+    def _get_first_row(
+        self,
+        result: ToolResult,
+    ) -> dict[str, Any] | None:
+        parsed = self._parse_json_response(result)
+        if parsed is None:
+            return None
+
+        rows = parsed.get("rows")
+        if not isinstance(rows, list) or not rows:
+            return None
+
+        first_row = rows[0]
+        if not isinstance(first_row, dict):
+            return None
+
+        return first_row
+
     def _list_clusters(self) -> list[ToolResult]:
         return self._run_async(self._list_clusters_async())
 
