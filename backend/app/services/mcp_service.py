@@ -149,7 +149,8 @@ class MCPService:
 
         table_results = self._list_tables(cluster_name, database_name)
         table_result = self._get_first_success(table_results)
-        if table_result is None:
+        table_name = self._get_table_name(table_result)
+        if table_name is None:
             return []
 
         return [table_result]
