@@ -218,18 +218,29 @@ class MCPService:
                 {"database": database_name},
             )
 
-    def _get_table_schema(self) -> ToolResult:
-        return ToolResult(
-            tool="get_table_schema",
-            success=True,
-            content="""
-Table memories:
-
-id
-user_id
-role
-content
-embedding
-created_at
-""".strip(),
+    def _get_table_schema(
+        self,
+        database_name: str = "defaultdb",
+        table_name: str = "memories",
+    ) -> ToolResult:
+        return self._run_async(
+            self._get_table_schema_async(database_name, table_name)
         )
+
+    async def _get_table_schema_async(
+        self,
+        database_name: str,
+        table_name: str,
+    ) -> ToolResult:
+        async with self._connected_client() as client:
+            tools = await self._discover_tools(client)
+            results = await self._call_tool(
+                client,
+                tools,
+                "get_table_schema",
+                {
+                    "database": database_name,
+                    "table": table_name,
+                },
+            )
+            return results[0]
