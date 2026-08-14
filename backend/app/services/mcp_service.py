@@ -130,7 +130,7 @@ class MCPService:
             return self._execute_table_workflow()
 
         if "schema" in words:
-            return [self._get_table_schema()]
+            return self._execute_table_workflow()
 
         return []
 
