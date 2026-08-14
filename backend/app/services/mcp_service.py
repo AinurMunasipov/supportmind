@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import httpx
 from mcp.client import Client
 from mcp.client.streamable_http import streamable_http_client
+from mcp.types import Tool
 
 
 @dataclass
@@ -41,6 +42,11 @@ class MCPService:
             )
             async with Client(transport) as client:
                 yield client
+
+    async def _discover_tools(self) -> dict[str, Tool]:
+        async with self._connected_client() as client:
+            result = await client.list_tools()
+            return {tool.name: tool for tool in result.tools}
 
     def execute(self, user_id: str, message: str) -> list[ToolResult]:
         normalized_message = message.strip().lower()
