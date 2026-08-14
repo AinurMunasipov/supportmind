@@ -135,25 +135,49 @@ class MCPService:
         return []
 
     def _execute_table_workflow(self) -> list[ToolResult]:
-        cluster_results = self._list_clusters()
+        try:
+            cluster_results = self._list_clusters()
+        except Exception:
+            return []
+
         cluster_result = self._get_first_success(cluster_results)
+        if cluster_result is None:
+            return []
+
         cluster_name = self._get_cluster_name(cluster_result)
         if cluster_name is None:
             return []
 
-        database_results = self._list_databases(cluster_name)
+        try:
+            database_results = self._list_databases(cluster_name)
+        except Exception:
+            return []
+
         database_result = self._get_first_success(database_results)
+        if database_result is None:
+            return []
+
         database_name = self._get_database_name(database_result)
         if database_name is None:
             return []
 
-        table_results = self._list_tables(cluster_name, database_name)
+        try:
+            table_results = self._list_tables(cluster_name, database_name)
+        except Exception:
+            return []
+
         table_result = self._get_first_success(table_results)
+        if table_result is None:
+            return []
+
         table_name = self._get_table_name(table_result)
         if table_name is None:
             return []
 
-        return [self._get_table_schema(database_name, table_name)]
+        try:
+            return [self._get_table_schema(database_name, table_name)]
+        except Exception:
+            return []
 
     def _get_first_success(
         self,
@@ -224,7 +248,7 @@ class MCPService:
         if row is None:
             return None
 
-        name = row.get("name")
+        name = row.get("database_name")
         if not isinstance(name, str):
             return None
 
