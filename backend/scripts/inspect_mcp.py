@@ -53,6 +53,41 @@ async def main() -> None:
                 )
                 print()
 
+            response = await client.call_tool(
+                "list_clusters",
+                {},
+            )
+            print("========================")
+            print("list_clusters response")
+            print("========================")
+            print(f"is_error: {response.is_error}")
+            print(f"content: {response.content}")
+            print("structured_content:")
+            print(
+                json.dumps(
+                    response.structured_content,
+                    indent=2,
+                    ensure_ascii=False,
+                    default=str,
+                )
+            )
+
+            response = await client.call_tool("get_cluster", {})
+            print("========================")
+            print("get_cluster response")
+            print("========================")
+            print(f"is_error: {response.is_error}")
+            print(f"content: {response.content}")
+            print("structured_content:")
+            print(
+                json.dumps(
+                    response.structured_content,
+                    indent=2,
+                    ensure_ascii=False,
+                    default=str,
+                )
+            )
+
 
 if __name__ == "__main__":
     asyncio.run(main())
