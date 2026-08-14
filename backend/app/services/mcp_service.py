@@ -200,16 +200,23 @@ class MCPService:
         cluster_name: str,
         database_name: str,
     ) -> list[ToolResult]:
-        return [
-            ToolResult(
-                tool="list_tables",
-                success=True,
-                content="""
-Available tables:
-- memories
-""".strip(),
+        return self._run_async(
+            self._list_tables_async(cluster_name, database_name)
+        )
+
+    async def _list_tables_async(
+        self,
+        cluster_name: str,
+        database_name: str,
+    ) -> list[ToolResult]:
+        async with self._connected_client() as client:
+            tools = await self._discover_tools(client)
+            return await self._call_tool(
+                client,
+                tools,
+                "list_tables",
+                {"database": database_name},
             )
-        ]
 
     def _get_table_schema(self) -> ToolResult:
         return ToolResult(
