@@ -166,6 +166,23 @@ class MCPService:
     def _get_content(self, result: ToolResult | None) -> str | None:
         return result.content if result is not None else None
 
+    def _parse_json_response(
+        self,
+        result: ToolResult,
+    ) -> dict[str, Any] | None:
+        if not result.success:
+            return None
+
+        try:
+            parsed = json.loads(result.content)
+        except (json.JSONDecodeError, TypeError):
+            return None
+
+        if not isinstance(parsed, dict):
+            return None
+
+        return parsed
+
     def _list_clusters(self) -> list[ToolResult]:
         return self._run_async(self._list_clusters_async())
 
