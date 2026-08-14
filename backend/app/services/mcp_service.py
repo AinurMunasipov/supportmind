@@ -192,7 +192,7 @@ class MCPService:
                 client,
                 tools,
                 "list_databases",
-                {"cluster_name": cluster_name},
+                {},
             )
 
     def _list_tables(
