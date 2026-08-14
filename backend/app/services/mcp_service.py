@@ -143,7 +143,7 @@ class MCPService:
 
         database_results = self._list_databases(cluster_name)
         database_result = self._get_first_success(database_results)
-        database_name = self._get_content(database_result)
+        database_name = self._get_database_name(database_result)
         if database_name is None:
             return []
 
@@ -214,6 +214,34 @@ class MCPService:
             return None
 
         return name
+
+    def _get_database_name(
+        self,
+        result: ToolResult,
+    ) -> str | None:
+        row = self._get_first_row(result)
+        if row is None:
+            return None
+
+        name = row.get("name")
+        if not isinstance(name, str):
+            return None
+
+        return name
+
+    def _get_table_name(
+        self,
+        result: ToolResult,
+    ) -> str | None:
+        row = self._get_first_row(result)
+        if row is None:
+            return None
+
+        table_name = row.get("table_name")
+        if not isinstance(table_name, str):
+            return None
+
+        return table_name
 
     def _list_clusters(self) -> list[ToolResult]:
         return self._run_async(self._list_clusters_async())
