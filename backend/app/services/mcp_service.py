@@ -201,6 +201,20 @@ class MCPService:
 
         return first_row
 
+    def _get_cluster_name(
+        self,
+        result: ToolResult,
+    ) -> str | None:
+        row = self._get_first_row(result)
+        if row is None:
+            return None
+
+        name = row.get("name")
+        if not isinstance(name, str):
+            return None
+
+        return name
+
     def _list_clusters(self) -> list[ToolResult]:
         return self._run_async(self._list_clusters_async())
 
