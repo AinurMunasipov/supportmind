@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
+
+import httpx
+from mcp.client import Client
+from mcp.client.streamable_http import streamable_http_client
 
 
 @dataclass
@@ -11,6 +18,30 @@ class ToolResult:
 
 
 class MCPService:
+    _SERVER_URL = "https://cockroachlabs.cloud/mcp"
+
+    @asynccontextmanager
+    async def _connected_client(self) -> AsyncIterator[Client]:
+        api_key = os.getenv("COCKROACH_MCP_API_KEY", "").strip()
+        if not api_key:
+            raise ValueError("COCKROACH_MCP_API_KEY is not configured.")
+
+        headers = {"Authorization": f"Bearer {api_key}"}
+        cluster_id = os.getenv("COCKROACH_MCP_CLUSTER_ID", "").strip()
+        if cluster_id:
+            headers["mcp-cluster-id"] = cluster_id
+
+        async with httpx.AsyncClient(
+            headers=headers,
+            follow_redirects=True,
+        ) as http_client:
+            transport = streamable_http_client(
+                self._SERVER_URL,
+                http_client=http_client,
+            )
+            async with Client(transport) as client:
+                yield client
+
     def execute(self, user_id: str, message: str) -> list[ToolResult]:
         normalized_message = message.strip().lower()
         words = normalized_message.split()
