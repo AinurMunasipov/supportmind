@@ -180,13 +180,20 @@ class MCPService:
             )
 
     def _list_databases(self, cluster_name: str) -> list[ToolResult]:
-        return [
-            ToolResult(
-                tool="list_databases",
-                success=True,
-                content="defaultdb",
+        return self._run_async(self._list_databases_async(cluster_name))
+
+    async def _list_databases_async(
+        self,
+        cluster_name: str,
+    ) -> list[ToolResult]:
+        async with self._connected_client() as client:
+            tools = await self._discover_tools(client)
+            return await self._call_tool(
+                client,
+                tools,
+                "list_databases",
+                {"cluster_name": cluster_name},
             )
-        ]
 
     def _list_tables(
         self,
