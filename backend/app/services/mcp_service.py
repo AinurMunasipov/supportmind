@@ -137,7 +137,7 @@ class MCPService:
     def _execute_table_workflow(self) -> list[ToolResult]:
         cluster_results = self._list_clusters()
         cluster_result = self._get_first_success(cluster_results)
-        cluster_name = self._get_content(cluster_result)
+        cluster_name = self._get_cluster_name(cluster_result)
         if cluster_name is None:
             return []
 
