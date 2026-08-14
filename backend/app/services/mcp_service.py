@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeVar
 
 import httpx
 from mcp.client import Client
 from mcp.client.streamable_http import streamable_http_client
 from mcp.types import TextContent, Tool
+
+_T = TypeVar("_T")
 
 
 @dataclass
@@ -22,6 +25,9 @@ class ToolResult:
 
 class MCPService:
     _SERVER_URL = "https://cockroachlabs.cloud/mcp"
+
+    def _run_async(self, awaitable: Awaitable[_T]) -> _T:
+        return asyncio.run(awaitable)
 
     @asynccontextmanager
     async def _connected_client(self) -> AsyncIterator[Client]:
@@ -161,13 +167,17 @@ class MCPService:
         return result.content if result is not None else None
 
     def _list_clusters(self) -> list[ToolResult]:
-        return [
-            ToolResult(
-                tool="list_clusters",
-                success=True,
-                content="supportmind-cluster",
+        return self._run_async(self._list_clusters_async())
+
+    async def _list_clusters_async(self) -> list[ToolResult]:
+        async with self._connected_client() as client:
+            tools = await self._discover_tools(client)
+            return await self._call_tool(
+                client,
+                tools,
+                "list_clusters",
+                {},
             )
-        ]
 
     def _list_databases(self, cluster_name: str) -> list[ToolResult]:
         return [
