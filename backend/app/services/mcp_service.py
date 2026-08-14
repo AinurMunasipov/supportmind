@@ -153,7 +153,7 @@ class MCPService:
         if table_name is None:
             return []
 
-        return [table_result]
+        return [self._get_table_schema(database_name, table_name)]
 
     def _get_first_success(
         self,
