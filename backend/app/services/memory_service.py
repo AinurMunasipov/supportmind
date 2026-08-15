@@ -25,6 +25,12 @@ class MemoryService:
         )
 
     def save_memory(self, user_id: str, role: str, content: str) -> Memory:
+        normalized_content = content.strip().lower()
+        existing_memories = self.load_memories(user_id)
+        for memory in existing_memories:
+            if memory.content.strip().lower() == normalized_content:
+                return memory
+
         embedding = self._embedding_service.generate_embedding(content)
         memory = memory_repository.create_memory(
             db=self._db,
