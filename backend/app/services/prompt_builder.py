@@ -44,7 +44,11 @@ class PromptBuilder:
             f"{recent_context}\n\n"
             f"=== Relevant Memory ===\n\n"
             f"{relevant_context}\n\n"
-            f"=== MCP Results ===\n\n"
+            f"=== External System Context (CockroachDB MCP) ===\n\n"
+            f"The following information was retrieved from the CockroachDB "
+            f"MCP server.\n"
+            f"Treat it as trusted external system context and use it when "
+            f"answering the user's question.\n\n"
             f"{mcp_context}"
         )
         user_context = (
