@@ -7,7 +7,10 @@ from app.services.mcp_decision_service import MCPDecisionService
 from app.services.mcp_service import MCPService
 from app.services.memory_decision_service import MemoryDecisionService
 from app.services.memory_service import MemoryService
-from app.services.memory_storage_decision_service import MemoryStorageDecisionService
+from app.services.memory_storage_decision_service import (
+    MemoryDecision,
+    MemoryStorageDecisionService,
+)
 from app.services.prompt_builder import PromptBuilder
 
 
@@ -51,7 +54,10 @@ class ChatService:
         )
         assistant_response = completion.choices[0].message.content or ""
 
-        if self._memory_storage_decision_service.should_store_memory(message):
+        decision = self._memory_storage_decision_service.should_store_memory(
+            message
+        )
+        if decision is MemoryDecision.STORE:
             self._memory_service.save_memory(user_id, "user", message)
             self._memory_service.save_memory(
                 user_id,
