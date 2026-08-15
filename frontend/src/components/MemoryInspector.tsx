@@ -12,8 +12,8 @@ export function MemoryInspector({
   relevantMemories,
 }: MemoryInspectorProps) {
   return (
-    <aside className="memory-inspector" aria-labelledby="memory-inspector-title">
-      <header className="memory-inspector__header">
+    <section className="memory-inspector" aria-labelledby="memory-inspector-title">
+      <header className="inspector-content-header">
         <h2 id="memory-inspector-title">Memory Inspector</h2>
         <p>Memory context used for the current request.</p>
       </header>
@@ -21,6 +21,6 @@ export function MemoryInspector({
         <MemorySection title="Recent Memory" memories={recentMemories} />
         <MemorySection title="Relevant Memory" memories={relevantMemories} />
       </div>
-    </aside>
+    </section>
   )
 }

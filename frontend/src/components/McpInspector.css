@@ -1,0 +1,60 @@
+.mcp-inspector {
+  padding: 20px;
+}
+
+.mcp-inspector__items {
+  display: grid;
+  gap: 10px;
+}
+
+.mcp-tool-item {
+  min-width: 0;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e1e5ea;
+  border-radius: 8px;
+}
+
+.mcp-tool-item__header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mcp-tool-item__header strong {
+  color: #344054;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.mcp-tool-item__status {
+  flex: none;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.mcp-tool-item__status--success {
+  color: #176b42;
+  background: #e8f7ef;
+}
+
+.mcp-tool-item__status--error {
+  color: #8f1d1d;
+  background: #fdecec;
+}
+
+.mcp-tool-item pre {
+  max-width: 100%;
+  margin: 0;
+  overflow-x: auto;
+  color: #344054;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

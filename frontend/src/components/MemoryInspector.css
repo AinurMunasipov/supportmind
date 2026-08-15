@@ -1,34 +1,10 @@
 .memory-inspector {
-  min-width: 0;
-  overflow-y: auto;
-  background: #ffffff;
-  border: 1px solid #dfe3e8;
-  border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(26, 36, 50, 0.08);
-}
-
-.memory-inspector__header {
   padding: 20px;
-  border-bottom: 1px solid #e7eaee;
-}
-
-.memory-inspector__header h2 {
-  margin: 0;
-  color: #182230;
-  font-size: 1.1rem;
-}
-
-.memory-inspector__header p {
-  margin: 5px 0 0;
-  color: #667085;
-  font-size: 0.8rem;
-  line-height: 1.4;
 }
 
 .memory-inspector__content {
   display: grid;
   gap: 22px;
-  padding: 20px;
 }
 
 .memory-section h3 {
@@ -83,20 +59,4 @@
   line-height: 1.45;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
-}
-
-@media (max-width: 900px) {
-  .memory-inspector {
-    max-height: 560px;
-  }
-}
-
-@media (max-width: 600px) {
-  .memory-inspector {
-    max-height: none;
-    border-right: 0;
-    border-left: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
 }
