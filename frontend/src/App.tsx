@@ -2,13 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { sendChatMessage } from './api/chat'
 import { ChatMessageItem } from './components/ChatMessageItem'
-import { MemoryInspector } from './components/MemoryInspector'
+import { InspectorPanel } from './components/InspectorPanel'
 import type { ChatMessage } from './types/chat'
+import type { McpResult } from './types/mcp'
 import type { Memory } from './types/memory'
 import './App.css'
-
-const recentMemories: Memory[] = []
-const relevantMemories: Memory[] = []
 
 function createMessage(
   role: ChatMessage['role'],
@@ -26,6 +24,9 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [recentMemories, setRecentMemories] = useState<Memory[]>([])
+  const [relevantMemories, setRelevantMemories] = useState<Memory[]>([])
+  const [mcpResults, setMcpResults] = useState<McpResult[]>([])
   const chatEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -53,13 +54,19 @@ function App() {
     ])
     setMessage('')
     setIsLoading(true)
+    setRecentMemories([])
+    setRelevantMemories([])
+    setMcpResults([])
 
     try {
-      const assistantResponse = await sendChatMessage(trimmedMessage)
+      const chatResponse = await sendChatMessage(trimmedMessage)
       setMessages((currentMessages) => [
         ...currentMessages,
-        createMessage('assistant', assistantResponse),
+        createMessage('assistant', chatResponse.response),
       ])
+      setRecentMemories(chatResponse.recent_memories ?? [])
+      setRelevantMemories(chatResponse.relevant_memories ?? [])
+      setMcpResults(chatResponse.mcp_results ?? [])
     } catch (error) {
       const errorMessage =
         error instanceof Error
@@ -142,9 +149,10 @@ function App() {
         </div>
       </section>
 
-      <MemoryInspector
+      <InspectorPanel
         recentMemories={recentMemories}
         relevantMemories={relevantMemories}
+        mcpResults={mcpResults}
       />
     </main>
   )

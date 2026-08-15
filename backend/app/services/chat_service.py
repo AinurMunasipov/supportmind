@@ -1,11 +1,14 @@
+from dataclasses import dataclass
+
 from openai import OpenAI
 from sqlalchemy.orm import Session
 
 from app.core.config import OPENAI_API_KEY
 from app.core.prompts import SUPPORTMIND_SYSTEM_PROMPT
+from app.models.memory import Memory
 from app.services.agent_context_decision import AgentContextDecision
 from app.services.mcp_decision_service import MCPDecisionService
-from app.services.mcp_service import MCPService
+from app.services.mcp_service import MCPService, ToolResult
 from app.services.memory_decision_service import (
     MemoryDecisionService,
     RetrievalDecision,
@@ -16,6 +19,14 @@ from app.services.memory_storage_decision_service import (
     MemoryStorageDecisionService,
 )
 from app.services.prompt_builder import PromptBuilder
+
+
+@dataclass(frozen=True)
+class ChatResult:
+    response: str
+    recent_memories: list[Memory]
+    relevant_memories: list[Memory]
+    mcp_results: list[ToolResult]
 
 
 class ChatService:
@@ -29,6 +40,13 @@ class ChatService:
         self._prompt_builder = PromptBuilder()
 
     def generate_response(self, user_id: str, message: str) -> str:
+        return self.generate_response_with_context(user_id, message).response
+
+    def generate_response_with_context(
+        self,
+        user_id: str,
+        message: str,
+    ) -> ChatResult:
         recent_memories = self._memory_service.recent_memories(user_id)
         relevant_memories = []
         context_decision = AgentContextDecision(
@@ -76,4 +94,9 @@ class ChatService:
                 assistant_response,
             )
 
-        return assistant_response
+        return ChatResult(
+            response=assistant_response,
+            recent_memories=recent_memories,
+            relevant_memories=relevant_memories,
+            mcp_results=mcp_results,
+        )

@@ -1,5 +1,11 @@
-interface ChatResponse {
+import type { McpResult } from '../types/mcp'
+import type { Memory } from '../types/memory'
+
+export interface ChatResponse {
   response: string
+  recent_memories?: Memory[]
+  relevant_memories?: Memory[]
+  mcp_results?: McpResult[]
 }
 
 function getApiBaseUrl(): string {
@@ -24,7 +30,7 @@ function getErrorDetail(payload: unknown): string | null {
   return null
 }
 
-export async function sendChatMessage(message: string): Promise<string> {
+export async function sendChatMessage(message: string): Promise<ChatResponse> {
   const response = await fetch(`${getApiBaseUrl()}/chat`, {
     method: 'POST',
     headers: {
@@ -57,5 +63,17 @@ export async function sendChatMessage(message: string): Promise<string> {
     throw new Error('SupportMind returned an invalid response.')
   }
 
-  return (payload as ChatResponse).response
+  const chatResponse = payload as ChatResponse
+  return {
+    response: chatResponse.response,
+    recent_memories: Array.isArray(chatResponse.recent_memories)
+      ? chatResponse.recent_memories
+      : [],
+    relevant_memories: Array.isArray(chatResponse.relevant_memories)
+      ? chatResponse.relevant_memories
+      : [],
+    mcp_results: Array.isArray(chatResponse.mcp_results)
+      ? chatResponse.mcp_results
+      : [],
+  }
 }
