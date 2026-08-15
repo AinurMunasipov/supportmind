@@ -2,12 +2,19 @@
   min-height: 100vh;
 }
 
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 760px) minmax(280px, 360px);
+  gap: 20px;
+  width: min(1140px, calc(100% - 32px));
+  height: min(780px, calc(100vh - 48px));
+  margin: 24px auto;
+}
+
 .app-shell {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  width: min(760px, calc(100% - 32px));
-  height: min(780px, calc(100vh - 48px));
-  margin: 24px auto;
+  min-width: 0;
   overflow: hidden;
   background: #ffffff;
   border: 1px solid #dfe3e8;
@@ -172,13 +179,30 @@
   border: 0;
 }
 
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .app-shell {
+    height: min(780px, calc(100vh - 48px));
+  }
+}
+
 @media (max-width: 600px) {
+  .workspace {
+    width: 100%;
+    margin: 0;
+    gap: 0;
+  }
+
   .app-shell {
     width: 100%;
     height: 100vh;
-    margin: 0;
     border: 0;
     border-radius: 0;
+    box-shadow: none;
   }
 
   .chat-area {

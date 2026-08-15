@@ -1,0 +1,102 @@
+.memory-inspector {
+  min-width: 0;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(26, 36, 50, 0.08);
+}
+
+.memory-inspector__header {
+  padding: 20px;
+  border-bottom: 1px solid #e7eaee;
+}
+
+.memory-inspector__header h2 {
+  margin: 0;
+  color: #182230;
+  font-size: 1.1rem;
+}
+
+.memory-inspector__header p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.memory-inspector__content {
+  display: grid;
+  gap: 22px;
+  padding: 20px;
+}
+
+.memory-section h3 {
+  margin: 0 0 10px;
+  color: #344054;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.memory-section__items {
+  display: grid;
+  gap: 10px;
+}
+
+.memory-section__empty {
+  margin: 0;
+  padding: 14px;
+  color: #7b8491;
+  background: #f7f8fa;
+  border: 1px dashed #d6dbe1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.memory-item {
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e1e5ea;
+  border-radius: 8px;
+}
+
+.memory-item dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.memory-item dt {
+  margin-bottom: 2px;
+  color: #667085;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.memory-item dd {
+  margin: 0;
+  color: #344054;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .memory-inspector {
+    max-height: 560px;
+  }
+}
+
+@media (max-width: 600px) {
+  .memory-inspector {
+    max-height: none;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

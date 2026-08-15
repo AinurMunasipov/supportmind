@@ -2,8 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { sendChatMessage } from './api/chat'
 import { ChatMessageItem } from './components/ChatMessageItem'
+import { MemoryInspector } from './components/MemoryInspector'
 import type { ChatMessage } from './types/chat'
+import type { Memory } from './types/memory'
 import './App.css'
+
+const recentMemories: Memory[] = []
+const relevantMemories: Memory[] = []
 
 function createMessage(
   role: ChatMessage['role'],
@@ -83,57 +88,64 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
-      <header className="app-header">
-        <h1>SupportMind</h1>
-        <p>AI support assistant</p>
-      </header>
+    <main className="workspace">
+      <section className="app-shell" aria-label="SupportMind chat">
+        <header className="app-header">
+          <h1>SupportMind</h1>
+          <p>AI support assistant</p>
+        </header>
 
-      <section className="chat-area" aria-label="Conversation" aria-live="polite">
-        {messages.length === 0 && !isLoading ? (
-          <p className="empty-state">Start a conversation with SupportMind.</p>
-        ) : null}
+        <section className="chat-area" aria-label="Conversation" aria-live="polite">
+          {messages.length === 0 && !isLoading ? (
+            <p className="empty-state">Start a conversation with SupportMind.</p>
+          ) : null}
 
-        {messages.map((chatMessage) => (
-          <ChatMessageItem key={chatMessage.id} message={chatMessage} />
-        ))}
+          {messages.map((chatMessage) => (
+            <ChatMessageItem key={chatMessage.id} message={chatMessage} />
+          ))}
 
-        {isLoading ? (
-          <ChatMessageItem
-            message={{
-              id: 'thinking',
-              role: 'assistant',
-              content: 'Thinking...',
-              createdAt: new Date().toISOString(),
-            }}
-          />
-        ) : null}
-        <div ref={chatEndRef} />
+          {isLoading ? (
+            <ChatMessageItem
+              message={{
+                id: 'thinking',
+                role: 'assistant',
+                content: 'Thinking...',
+                createdAt: new Date().toISOString(),
+              }}
+            />
+          ) : null}
+          <div ref={chatEndRef} />
+        </section>
+
+        <div className="composer">
+          <p className="composer__status" role="status">
+            {isLoading ? 'SupportMind is thinking...' : 'SupportMind is ready.'}
+          </p>
+          <form className="message-form" onSubmit={handleSubmit}>
+            <label className="visually-hidden" htmlFor="message">
+              Message
+            </label>
+            <textarea
+              ref={textareaRef}
+              id="message"
+              name="message"
+              rows={3}
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              onKeyDown={handleMessageKeyDown}
+              placeholder="Type your message..."
+            />
+            <button type="submit" disabled={isLoading || !message.trim()}>
+              Send
+            </button>
+          </form>
+        </div>
       </section>
 
-      <div className="composer">
-        <p className="composer__status" role="status">
-          {isLoading ? 'SupportMind is thinking...' : 'SupportMind is ready.'}
-        </p>
-        <form className="message-form" onSubmit={handleSubmit}>
-          <label className="visually-hidden" htmlFor="message">
-            Message
-          </label>
-          <textarea
-            ref={textareaRef}
-            id="message"
-            name="message"
-            rows={3}
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            onKeyDown={handleMessageKeyDown}
-            placeholder="Type your message..."
-          />
-          <button type="submit" disabled={isLoading || !message.trim()}>
-            Send
-          </button>
-        </form>
-      </div>
+      <MemoryInspector
+        recentMemories={recentMemories}
+        relevantMemories={relevantMemories}
+      />
     </main>
   )
 }
