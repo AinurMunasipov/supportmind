@@ -5,7 +5,10 @@ from app.core.config import OPENAI_API_KEY
 from app.core.prompts import SUPPORTMIND_SYSTEM_PROMPT
 from app.services.mcp_decision_service import MCPDecisionService
 from app.services.mcp_service import MCPService
-from app.services.memory_decision_service import MemoryDecisionService
+from app.services.memory_decision_service import (
+    MemoryDecisionService,
+    RetrievalDecision,
+)
 from app.services.memory_service import MemoryService
 from app.services.memory_storage_decision_service import (
     MemoryDecision,
@@ -27,7 +30,10 @@ class ChatService:
     def generate_response(self, user_id: str, message: str) -> str:
         recent_memories = self._memory_service.recent_memories(user_id)
         relevant_memories = []
-        if self._memory_decision_service.should_search_memories(message):
+        retrieval_decision = (
+            self._memory_decision_service.should_search_memories(message)
+        )
+        if retrieval_decision is RetrievalDecision.RETRIEVE:
             relevant_memories = self._memory_service.search_memories(
                 user_id,
                 message,

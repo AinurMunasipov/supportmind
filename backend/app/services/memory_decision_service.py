@@ -1,3 +1,11 @@
+from enum import Enum, auto
+
+
+class RetrievalDecision(Enum):
+    RETRIEVE = auto()
+    SKIP = auto()
+
+
 class MemoryDecisionService:
     _CONVERSATIONAL_MESSAGES = {
         "hello",
@@ -10,5 +18,9 @@ class MemoryDecisionService:
         "okay",
     }
 
-    def should_search_memories(self, message: str) -> bool:
-        return message.strip().lower() not in self._CONVERSATIONAL_MESSAGES
+    def should_search_memories(self, message: str) -> RetrievalDecision:
+        return (
+            RetrievalDecision.RETRIEVE
+            if message.strip().lower() not in self._CONVERSATIONAL_MESSAGES
+            else RetrievalDecision.SKIP
+        )
