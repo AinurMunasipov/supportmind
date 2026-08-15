@@ -26,30 +26,31 @@ class PromptBuilder:
                 key=lambda memory: memory.created_at,
             )
         )
-        tool_context = "\n".join(
-            result.content
-            for result in tool_results
+        effective_mcp_results = (
+            mcp_results if mcp_results is not None else tool_results
+        )
+        mcp_context = "\n\n".join(
+            (
+                f"Tool: {result.tool}\n"
+                f"Success: {result.success}\n"
+                f"Content:\n{result.content}"
+            )
+            for result in effective_mcp_results
         )
         context = (
+            f"=== System Prompt ===\n\n"
             f"{system_prompt.rstrip()}\n\n"
-            f"=== Recent Conversation ===\n\n"
+            f"=== Recent Memory ===\n\n"
             f"{recent_context}\n\n"
-            f"=== Relevant Memories ===\n\n"
+            f"=== Relevant Memory ===\n\n"
             f"{relevant_context}\n\n"
-            f"=== Tool Results ===\n\n"
-            f"{tool_context}"
+            f"=== MCP Results ===\n\n"
+            f"{mcp_context}"
         )
-        if mcp_results:
-            mcp_context = "\n\n".join(
-                (
-                    f"Tool: {result.tool}\n"
-                    f"Success: {result.success}\n"
-                    f"Content:\n{result.content}"
-                )
-                for result in mcp_results
-                if result.success
-            )
-            context += f"\n\n=== MCP Results ===\n\n{mcp_context}"
+        user_context = (
+            f"=== User Message ===\n\n"
+            f"{user_message}"
+        )
 
         return [
             {
@@ -58,6 +59,6 @@ class PromptBuilder:
             },
             {
                 "role": "user",
-                "content": user_message,
+                "content": user_context,
             },
         ]
