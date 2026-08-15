@@ -26,13 +26,15 @@ class MemoryService:
 
     def save_memory(self, user_id: str, role: str, content: str) -> Memory:
         embedding = self._embedding_service.generate_embedding(content)
-        return memory_repository.create_memory(
+        memory = memory_repository.create_memory(
             db=self._db,
             user_id=user_id,
             role=role,
             content=content,
             embedding=embedding,
         )
+        memory.importance = 1
+        return memory
 
     def load_memories(self, user_id: str) -> list[Memory]:
         return memory_repository.get_user_memories(
