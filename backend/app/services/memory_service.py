@@ -41,7 +41,19 @@ class MemoryService:
         )
         memory.importance = 1
         memory.summary = None
+        self._compress_memory(memory)
         return memory
+
+    def _compress_memory(self, memory: Memory) -> None:
+        if memory.summary is not None:
+            return
+
+        if len(memory.content) < 300:
+            return
+
+        memory.summary = memory.content
+        self._db.commit()
+        self._db.refresh(memory)
 
     def load_memories(self, user_id: str) -> list[Memory]:
         return memory_repository.get_user_memories(
