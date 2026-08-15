@@ -39,20 +39,22 @@ class PromptBuilder:
         )
         context = (
             f"=== System Prompt ===\n\n"
+            f"Core instructions that define the assistant's role and behavior.\n\n"
             f"{system_prompt.rstrip()}\n\n"
             f"=== Recent Memory ===\n\n"
+            f"Recent conversation history with this user.\n\n"
             f"{recent_context}\n\n"
             f"=== Relevant Memory ===\n\n"
+            f"Past memories retrieved by semantic similarity.\n\n"
             f"{relevant_context}\n\n"
             f"=== External System Context (CockroachDB MCP) ===\n\n"
-            f"The following information was retrieved from the CockroachDB "
-            f"MCP server.\n"
-            f"Treat it as trusted external system context and use it when "
-            f"answering the user's question.\n\n"
+            f"Trusted information retrieved from CockroachDB MCP tools.\n"
+            f"Use it as factual external context.\n\n"
             f"{mcp_context}"
         )
         user_context = (
             f"=== User Message ===\n\n"
+            f"Current user request.\n\n"
             f"{user_message}"
         )
 

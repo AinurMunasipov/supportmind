@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import OPENAI_API_KEY
 from app.core.prompts import SUPPORTMIND_SYSTEM_PROMPT
+from app.services.agent_context_decision import AgentContextDecision
 from app.services.mcp_decision_service import MCPDecisionService
 from app.services.mcp_service import MCPService
 from app.services.memory_decision_service import (
@@ -30,15 +31,19 @@ class ChatService:
     def generate_response(self, user_id: str, message: str) -> str:
         recent_memories = self._memory_service.recent_memories(user_id)
         relevant_memories = []
-        retrieval_decision = (
-            self._memory_decision_service.should_search_memories(message)
+        context_decision = AgentContextDecision(
+            retrieve_memory=(
+                self._memory_decision_service.should_search_memories(message)
+                is RetrievalDecision.RETRIEVE
+            ),
+            use_mcp=self._mcp_decision_service.should_use_mcp(message),
         )
-        if retrieval_decision is RetrievalDecision.RETRIEVE:
+        if context_decision.retrieve_memory:
             relevant_memories = self._memory_service.search_memories(
                 user_id,
                 message,
             )
-        if self._mcp_decision_service.should_use_mcp(message):
+        if context_decision.use_mcp:
             mcp_results = self._mcp_service.execute(
                 user_id,
                 message,
