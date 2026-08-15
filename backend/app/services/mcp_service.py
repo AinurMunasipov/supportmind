@@ -126,13 +126,23 @@ class MCPService:
         return self._dispatch(words)
 
     def _dispatch(self, words: list[str]) -> list[ToolResult]:
-        if "table" in words or "tables" in words:
-            return self._execute_table_workflow()
+        workflow = self._get_workflow(words)
 
-        if "schema" in words:
+        if workflow == "table":
             return self._execute_table_workflow()
 
         return []
+
+    def _get_workflow(self, words: list[str]) -> str | None:
+        routes = {
+            "table": "table",
+            "tables": "table",
+            "schema": "table",
+        }
+        return next(
+            (routes[word] for word in words if word in routes),
+            None,
+        )
 
     def _execute_table_workflow(self) -> list[ToolResult]:
         try:
