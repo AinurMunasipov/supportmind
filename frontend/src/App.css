@@ -71,14 +71,24 @@
   border-color: #f1c4c4;
 }
 
-.chat-message__role {
-  display: block;
+.chat-message__meta {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  justify-content: space-between;
   margin-bottom: 4px;
   font-size: 0.75rem;
+  opacity: 0.72;
+}
+
+.chat-message__role {
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  opacity: 0.72;
+}
+
+.chat-message__meta time {
+  white-space: nowrap;
 }
 
 .chat-message p {
@@ -88,13 +98,22 @@
   white-space: pre-wrap;
 }
 
+.composer {
+  padding: 12px 16px 16px;
+  border-top: 1px solid #e7eaee;
+}
+
+.composer__status {
+  margin: 0 0 8px;
+  color: #667085;
+  font-size: 0.8rem;
+}
+
 .message-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: end;
-  padding: 16px;
-  border-top: 1px solid #e7eaee;
 }
 
 .message-form textarea {

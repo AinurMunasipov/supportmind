@@ -11,9 +11,17 @@ const roleLabels: Record<ChatMessage['role'], string> = {
 }
 
 export function ChatMessageItem({ message }: ChatMessageItemProps) {
+  const timestamp = new Date(message.createdAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
   return (
     <article className={`chat-message chat-message--${message.role}`}>
-      <span className="chat-message__role">{roleLabels[message.role]}</span>
+      <header className="chat-message__meta">
+        <span className="chat-message__role">{roleLabels[message.role]}</span>
+        <time dateTime={message.createdAt}>{timestamp}</time>
+      </header>
       <p>{message.content}</p>
     </article>
   )

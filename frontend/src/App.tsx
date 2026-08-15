@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
+import type { FormEvent, KeyboardEvent } from 'react'
 import { sendChatMessage } from './api/chat'
 import { ChatMessageItem } from './components/ChatMessageItem'
 import type { ChatMessage } from './types/chat'
@@ -13,6 +13,7 @@ function createMessage(
     id: crypto.randomUUID(),
     role,
     content,
+    createdAt: new Date().toISOString(),
   }
 }
 
@@ -21,10 +22,17 @@ function App() {
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
+
+  useEffect(() => {
+    if (!isLoading) {
+      textareaRef.current?.focus()
+    }
+  }, [isLoading])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -61,6 +69,19 @@ function App() {
     }
   }
 
+  const handleMessageKeyDown = (
+    event: KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (event.key !== 'Enter' || event.shiftKey) {
+      return
+    }
+
+    event.preventDefault()
+    if (!isLoading && message.trim()) {
+      event.currentTarget.form?.requestSubmit()
+    }
+  }
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -83,28 +104,36 @@ function App() {
               id: 'thinking',
               role: 'assistant',
               content: 'Thinking...',
+              createdAt: new Date().toISOString(),
             }}
           />
         ) : null}
         <div ref={chatEndRef} />
       </section>
 
-      <form className="message-form" onSubmit={handleSubmit}>
-        <label className="visually-hidden" htmlFor="message">
-          Message
-        </label>
-        <textarea
-          id="message"
-          name="message"
-          rows={3}
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          placeholder="Type your message..."
-        />
-        <button type="submit" disabled={isLoading || !message.trim()}>
-          Send
-        </button>
-      </form>
+      <div className="composer">
+        <p className="composer__status" role="status">
+          {isLoading ? 'SupportMind is thinking...' : 'SupportMind is ready.'}
+        </p>
+        <form className="message-form" onSubmit={handleSubmit}>
+          <label className="visually-hidden" htmlFor="message">
+            Message
+          </label>
+          <textarea
+            ref={textareaRef}
+            id="message"
+            name="message"
+            rows={3}
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            onKeyDown={handleMessageKeyDown}
+            placeholder="Type your message..."
+          />
+          <button type="submit" disabled={isLoading || !message.trim()}>
+            Send
+          </button>
+        </form>
+      </div>
     </main>
   )
 }
