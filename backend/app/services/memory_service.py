@@ -40,6 +40,7 @@ class MemoryService:
             embedding=embedding,
         )
         memory.importance = 1
+        memory.summary = None
         return memory
 
     def load_memories(self, user_id: str) -> list[Memory]:

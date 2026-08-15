@@ -25,6 +25,11 @@ class Memory(Base):
         nullable=False,
         default=1,
     )
+    summary: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        default=None,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
