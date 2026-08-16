@@ -15,11 +15,19 @@ export function MemoryInspector({
     <section className="memory-inspector" aria-labelledby="memory-inspector-title">
       <header className="inspector-content-header">
         <h2 id="memory-inspector-title">Memory Inspector</h2>
-        <p>Memory context used for the current request.</p>
+        <p>Retrieved memory for the current response.</p>
       </header>
       <div className="memory-inspector__content">
-        <MemorySection title="Recent Memory" memories={recentMemories} />
-        <MemorySection title="Relevant Memory" memories={relevantMemories} />
+        <MemorySection
+          title="Recent Memory"
+          memories={recentMemories}
+          emptyMessage="No recent memories."
+        />
+        <MemorySection
+          title="Relevant Memory"
+          memories={relevantMemories}
+          emptyMessage="No relevant memories."
+        />
       </div>
     </section>
   )

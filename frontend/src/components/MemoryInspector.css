@@ -1,14 +1,14 @@
 .memory-inspector {
-  padding: 20px;
+  padding: 24px;
 }
 
 .memory-inspector__content {
   display: grid;
-  gap: 22px;
+  gap: 28px;
 }
 
 .memory-section h3 {
-  margin: 0 0 10px;
+  margin: 0 0 14px;
   color: #344054;
   font-size: 0.8rem;
   letter-spacing: 0.02em;
@@ -16,7 +16,7 @@
 
 .memory-section__items {
   display: grid;
-  gap: 10px;
+  gap: 14px;
 }
 
 .memory-section__empty {

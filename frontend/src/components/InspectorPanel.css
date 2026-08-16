@@ -44,7 +44,7 @@
 }
 
 .inspector-content-header {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .inspector-content-header h2 {
@@ -54,7 +54,7 @@
 }
 
 .inspector-content-header p {
-  margin: 5px 0 0;
+  margin: 8px 0 0;
   color: #667085;
   font-size: 0.8rem;
   line-height: 1.4;
