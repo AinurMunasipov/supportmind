@@ -1,3 +1,9 @@
+import logging
+
+
+logger = logging.getLogger("uvicorn.error").getChild(__name__)
+
+
 class MCPDecisionService:
     _MCP_KEYWORDS = {
         "count",
@@ -19,7 +25,7 @@ class MCPDecisionService:
     def should_use_mcp(self, message: str) -> bool:
         normalized_message = message.strip().lower()
         words = normalized_message.split()
-        return any(
+        decision = any(
             (
                 keyword in normalized_message
                 if " " in keyword
@@ -27,3 +33,5 @@ class MCPDecisionService:
             )
             for keyword in self._MCP_KEYWORDS
         )
+        logger.info("MCP decision use_mcp=%s", decision)
+        return decision

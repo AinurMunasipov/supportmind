@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 from collections.abc import AsyncIterator, Awaitable
 from contextlib import asynccontextmanager
@@ -14,6 +15,7 @@ from mcp.client.streamable_http import streamable_http_client
 from mcp.types import TextContent, Tool
 
 _T = TypeVar("_T")
+logger = logging.getLogger("uvicorn.error").getChild(__name__)
 
 
 @dataclass
@@ -64,7 +66,7 @@ class MCPService:
     ) -> list[ToolResult]:
         if tool_name not in tools:
             return [
-                ToolResult(
+                self._create_result(
                     tool=tool_name,
                     success=False,
                     content=f"MCP tool not found: {tool_name}",
@@ -72,6 +74,7 @@ class MCPService:
             ]
 
         try:
+            logger.info("Executing MCP tool tool=%s", tool_name)
             response = await client.call_tool(tool_name, arguments)
             content = "\n".join(
                 block.text
@@ -88,7 +91,7 @@ class MCPService:
 
             if response.is_error:
                 return [
-                    ToolResult(
+                    self._create_result(
                         tool=tool_name,
                         success=False,
                         content=content or "MCP tool returned an error.",
@@ -97,7 +100,7 @@ class MCPService:
 
             if not content:
                 return [
-                    ToolResult(
+                    self._create_result(
                         tool=tool_name,
                         success=False,
                         content="MCP tool returned an empty response.",
@@ -105,20 +108,41 @@ class MCPService:
                 ]
 
             return [
-                ToolResult(
+                self._create_result(
                     tool=tool_name,
                     success=True,
                     content=content,
                 )
             ]
         except Exception as exc:
+            logger.exception("MCP tool execution error tool=%s", tool_name)
             return [
-                ToolResult(
+                self._create_result(
                     tool=tool_name,
                     success=False,
                     content=str(exc) or "MCP tool call failed.",
                 )
             ]
+
+    def _create_result(
+        self,
+        tool: str,
+        success: bool,
+        content: str,
+    ) -> ToolResult:
+        result = ToolResult(
+            tool=tool,
+            success=success,
+            content=content,
+        )
+        log_method = logger.info if success else logger.error
+        log_method(
+            "MCP execution result tool=%s success=%s content_length=%s",
+            tool,
+            success,
+            len(content),
+        )
+        return result
 
     def execute(self, user_id: str, message: str) -> list[ToolResult]:
         normalized_message = message.strip().lower()
@@ -127,6 +151,7 @@ class MCPService:
 
     def _dispatch(self, words: list[str]) -> list[ToolResult]:
         workflow = self._get_workflow(words)
+        logger.info("MCP workflow selected workflow=%s", workflow)
 
         if workflow == "table":
             return self._execute_table_workflow()
@@ -145,49 +170,139 @@ class MCPService:
         )
 
     def _execute_table_workflow(self) -> list[ToolResult]:
+        workflow_results: list[ToolResult] = []
+
         try:
             cluster_results = self._list_clusters()
-        except Exception:
-            return []
+        except Exception as exc:
+            logger.exception("MCP workflow error tool=list_clusters")
+            return [
+                self._create_result(
+                    tool="list_clusters",
+                    success=False,
+                    content=str(exc) or "list_clusters failed.",
+                )
+            ]
+
+        workflow_results.extend(cluster_results)
 
         cluster_result = self._get_first_success(cluster_results)
         if cluster_result is None:
-            return []
+            if not cluster_results:
+                workflow_results.append(
+                    self._create_result(
+                        tool="list_clusters",
+                        success=False,
+                        content="list_clusters returned no results.",
+                    )
+                )
+            return workflow_results
 
         cluster_name = self._get_cluster_name(cluster_result)
         if cluster_name is None:
-            return []
+            workflow_results.append(
+                self._create_result(
+                    tool="list_clusters",
+                    success=False,
+                    content="Unable to extract cluster name from list_clusters response.",
+                )
+            )
+            return workflow_results
 
         try:
             database_results = self._list_databases(cluster_name)
-        except Exception:
-            return []
+        except Exception as exc:
+            logger.exception("MCP workflow error tool=list_databases")
+            workflow_results.append(
+                self._create_result(
+                    tool="list_databases",
+                    success=False,
+                    content=str(exc) or "list_databases failed.",
+                )
+            )
+            return workflow_results
+
+        workflow_results.extend(database_results)
 
         database_result = self._get_first_success(database_results)
         if database_result is None:
-            return []
+            if not database_results:
+                workflow_results.append(
+                    self._create_result(
+                        tool="list_databases",
+                        success=False,
+                        content="list_databases returned no results.",
+                    )
+                )
+            return workflow_results
 
         database_name = self._get_database_name(database_result)
         if database_name is None:
-            return []
+            workflow_results.append(
+                self._create_result(
+                    tool="list_databases",
+                    success=False,
+                    content=(
+                        "Unable to extract database name from "
+                        "list_databases response."
+                    ),
+                )
+            )
+            return workflow_results
 
         try:
             table_results = self._list_tables(cluster_name, database_name)
-        except Exception:
-            return []
+        except Exception as exc:
+            logger.exception("MCP workflow error tool=list_tables")
+            workflow_results.append(
+                self._create_result(
+                    tool="list_tables",
+                    success=False,
+                    content=str(exc) or "list_tables failed.",
+                )
+            )
+            return workflow_results
+
+        workflow_results.extend(table_results)
 
         table_result = self._get_first_success(table_results)
         if table_result is None:
-            return []
+            if not table_results:
+                workflow_results.append(
+                    self._create_result(
+                        tool="list_tables",
+                        success=False,
+                        content="list_tables returned no results.",
+                    )
+                )
+            return workflow_results
 
         table_name = self._get_table_name(table_result)
         if table_name is None:
-            return []
+            workflow_results.append(
+                self._create_result(
+                    tool="list_tables",
+                    success=False,
+                    content="Unable to extract table name from list_tables response.",
+                )
+            )
+            return workflow_results
 
         try:
-            return [self._get_table_schema(database_name, table_name)]
-        except Exception:
-            return []
+            schema_result = self._get_table_schema(database_name, table_name)
+        except Exception as exc:
+            logger.exception("MCP workflow error tool=get_table_schema")
+            workflow_results.append(
+                self._create_result(
+                    tool="get_table_schema",
+                    success=False,
+                    content=str(exc) or "get_table_schema failed.",
+                )
+            )
+            return workflow_results
+
+        workflow_results.append(schema_result)
+        return workflow_results
 
     def _get_first_success(
         self,
