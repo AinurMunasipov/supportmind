@@ -29,6 +29,7 @@
 .mcp-inspector > .inspector-empty-state {
   align-self: start;
   margin: 10px;
+  padding: 10px;
 }
 
 .mcp-tool-item__header {
