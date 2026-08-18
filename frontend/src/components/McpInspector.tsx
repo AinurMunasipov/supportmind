@@ -11,7 +11,7 @@ export function McpInspector({ results }: McpInspectorProps) {
     <section className="mcp-inspector" aria-labelledby="mcp-inspector-title">
       <header className="inspector-content-header">
         <h2 id="mcp-inspector-title">MCP Inspector</h2>
-        <p>Tools executed for the current request, in chronological order.</p>
+        <p>MCP tools executed for this request.</p>
       </header>
       {results.length > 0 ? (
         <div className="mcp-inspector__items">
