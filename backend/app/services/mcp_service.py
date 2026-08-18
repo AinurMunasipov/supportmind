@@ -42,6 +42,10 @@ class MCPService:
         if cluster_id:
             headers["mcp-cluster-id"] = cluster_id
 
+        logger.info(
+            "Initializing MCP HTTP transport cluster_id_configured=%s",
+            bool(cluster_id),
+        )
         async with httpx.AsyncClient(
             headers=headers,
             follow_redirects=True,
@@ -50,12 +54,37 @@ class MCPService:
                 self._SERVER_URL,
                 http_client=http_client,
             )
-            async with Client(transport) as client:
-                yield client
+            connected = False
+            try:
+                logger.info("Connecting MCP client")
+                async with Client(transport) as client:
+                    connected = True
+                    logger.info("MCP client connected")
+                    yield client
+            except Exception as exc:
+                stage = (
+                    "connected client session"
+                    if connected
+                    else "client protocol initialization"
+                )
+                details = self._format_exception(exc)
+                logger.exception("MCP %s failed: %s", stage, details)
+                hint = (
+                    " Verify deployed COCKROACH_MCP_API_KEY and "
+                    "COCKROACH_MCP_CLUSTER_ID values."
+                    if "MCPError" in details
+                    else ""
+                )
+                raise RuntimeError(
+                    f"MCP {stage} failed: {details}.{hint}"
+                ) from exc
 
     async def _discover_tools(self, client: Client) -> dict[str, Tool]:
+        logger.info("Discovering MCP tools")
         result = await client.list_tools()
-        return {tool.name: tool for tool in result.tools}
+        tools = {tool.name: tool for tool in result.tools}
+        logger.info("MCP tool discovery complete tool_count=%s", len(tools))
+        return tools
 
     async def _call_tool(
         self,
@@ -120,9 +149,22 @@ class MCPService:
                 self._create_result(
                     tool=tool_name,
                     success=False,
-                    content=str(exc) or "MCP tool call failed.",
+                    content=self._format_exception(exc),
                 )
             ]
+
+    def _format_exception(self, error: BaseException) -> str:
+        if isinstance(error, BaseExceptionGroup):
+            details = [
+                self._format_exception(nested)
+                for nested in error.exceptions
+            ]
+            return "; ".join(dict.fromkeys(details))
+
+        message = str(error).strip() or "No error details provided."
+        code = getattr(error, "code", None)
+        code_details = f" code={code}" if code is not None else ""
+        return f"{type(error).__name__}{code_details}: {message}"
 
     def _create_result(
         self,
@@ -160,6 +202,8 @@ class MCPService:
 
     def _get_workflow(self, words: list[str]) -> str | None:
         routes = {
+            "database": "table",
+            "databases": "table",
             "table": "table",
             "tables": "table",
             "schema": "table",
@@ -180,7 +224,7 @@ class MCPService:
                 self._create_result(
                     tool="list_clusters",
                     success=False,
-                    content=str(exc) or "list_clusters failed.",
+                    content=self._format_exception(exc),
                 )
             ]
 
@@ -217,7 +261,7 @@ class MCPService:
                 self._create_result(
                     tool="list_databases",
                     success=False,
-                    content=str(exc) or "list_databases failed.",
+                    content=self._format_exception(exc),
                 )
             )
             return workflow_results
@@ -258,7 +302,7 @@ class MCPService:
                 self._create_result(
                     tool="list_tables",
                     success=False,
-                    content=str(exc) or "list_tables failed.",
+                    content=self._format_exception(exc),
                 )
             )
             return workflow_results
@@ -296,7 +340,7 @@ class MCPService:
                 self._create_result(
                     tool="get_table_schema",
                     success=False,
-                    content=str(exc) or "get_table_schema failed.",
+                    content=self._format_exception(exc),
                 )
             )
             return workflow_results
