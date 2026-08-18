@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 from collections.abc import AsyncIterator, Awaitable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -188,7 +189,7 @@ class MCPService:
 
     def execute(self, user_id: str, message: str) -> list[ToolResult]:
         normalized_message = message.strip().lower()
-        words = normalized_message.split()
+        words = re.findall(r"[a-z0-9_]+", normalized_message)
         return self._dispatch(words)
 
     def _dispatch(self, words: list[str]) -> list[ToolResult]:
@@ -202,11 +203,14 @@ class MCPService:
 
     def _get_workflow(self, words: list[str]) -> str | None:
         routes = {
+            "column": "table",
+            "columns": "table",
             "database": "table",
             "databases": "table",
             "table": "table",
             "tables": "table",
             "schema": "table",
+            "structure": "table",
         }
         return next(
             (routes[word] for word in words if word in routes),

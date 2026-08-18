@@ -1,27 +1,35 @@
 .memory-inspector {
-  padding: 24px;
-}
-
-.memory-inspector__content {
   display: grid;
-  gap: 28px;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-height: 0;
 }
 
-.memory-section h3 {
-  margin: 0 0 14px;
-  color: #344054;
-  font-size: 0.8rem;
-  letter-spacing: 0.02em;
+.memory-section {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(26, 36, 50, 0.06);
+}
+
+.memory-section__body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
 }
 
 .memory-section__items {
   display: grid;
-  gap: 14px;
+  gap: 8px;
 }
 
 .memory-section__empty {
   margin: 0;
-  padding: 14px;
+  padding: 10px;
   color: #7b8491;
   background: #f7f8fa;
   border: 1px dashed #d6dbe1;
@@ -31,20 +39,22 @@
 }
 
 .memory-item {
-  padding: 12px;
+  padding: 9px 10px;
   background: #f8fafc;
   border: 1px solid #e1e5ea;
   border-radius: 8px;
 }
 
-.memory-item dl {
-  display: grid;
+.memory-item__header {
+  display: flex;
   gap: 10px;
-  margin: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 5px;
 }
 
-.memory-item dt {
-  margin-bottom: 2px;
+.memory-item__header strong,
+.memory-item__summary span {
   color: #667085;
   font-size: 0.7rem;
   font-weight: 700;
@@ -52,11 +62,40 @@
   text-transform: uppercase;
 }
 
-.memory-item dd {
+.memory-item__header time {
+  color: #7b8491;
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+.memory-item p {
   margin: 0;
   color: #344054;
-  font-size: 0.82rem;
-  line-height: 1.45;
+  font-size: 0.78rem;
+  line-height: 1.35;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+}
+
+.memory-item__summary {
+  padding: 7px 8px;
+  background: #eef3ff;
+  border-left: 3px solid #315efb;
+  border-radius: 5px;
+}
+
+.memory-item__summary span {
+  display: block;
+  margin-bottom: 3px;
+  color: #315efb;
+}
+
+@media (max-width: 600px) {
+  .memory-inspector {
+    grid-template-rows: auto;
+  }
+
+  .memory-section__body {
+    max-height: 280px;
+  }
 }

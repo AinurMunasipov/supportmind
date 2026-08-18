@@ -12,23 +12,19 @@ export function MemoryInspector({
   relevantMemories,
 }: MemoryInspectorProps) {
   return (
-    <section className="memory-inspector" aria-labelledby="memory-inspector-title">
-      <header className="inspector-content-header">
-        <h2 id="memory-inspector-title">Memory Inspector</h2>
-        <p>Retrieved memory for the current response.</p>
-      </header>
-      <div className="memory-inspector__content">
-        <MemorySection
-          title="Recent Memory"
-          memories={recentMemories}
-          emptyMessage="No recent memories."
-        />
-        <MemorySection
-          title="Relevant Memory"
-          memories={relevantMemories}
-          emptyMessage="No relevant memories."
-        />
-      </div>
-    </section>
+    <div className="memory-inspector" aria-label="Memory inspectors">
+      <MemorySection
+        title="Recent Memory"
+        description="Recent conversation context."
+        memories={recentMemories}
+        emptyMessage="No recent memories."
+      />
+      <MemorySection
+        title="Relevant Memory"
+        description="Retrieved memory for the current response."
+        memories={relevantMemories}
+        emptyMessage="No relevant memories."
+      />
+    </div>
   )
 }

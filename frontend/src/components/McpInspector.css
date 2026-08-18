@@ -1,10 +1,20 @@
 .mcp-inspector {
-  padding: 20px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(26, 36, 50, 0.06);
 }
 
 .mcp-inspector__items {
   display: grid;
   gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
 }
 
 .mcp-tool-item {
@@ -13,6 +23,11 @@
   background: #f8fafc;
   border: 1px solid #e1e5ea;
   border-radius: 8px;
+}
+
+.mcp-inspector > .inspector-empty-state {
+  align-self: start;
+  margin: 10px;
 }
 
 .mcp-tool-item__header {
@@ -57,4 +72,10 @@
   line-height: 1.5;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .mcp-inspector__items {
+    max-height: 360px;
+  }
 }

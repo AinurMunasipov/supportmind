@@ -12,34 +12,20 @@ function formatCreatedAt(createdAt: string): string {
 export function MemoryItem({ memory }: MemoryItemProps) {
   return (
     <article className="memory-item">
-      <dl>
-        <div>
-          <dt>Role</dt>
-          <dd>{memory.role}</dd>
+      <header className="memory-item__header">
+        <strong>{memory.role}</strong>
+        <time dateTime={memory.created_at}>
+          {formatCreatedAt(memory.created_at)}
+        </time>
+      </header>
+      {memory.summary ? (
+        <div className="memory-item__summary">
+          <span>Summary</span>
+          <p>{memory.summary}</p>
         </div>
-        <div>
-          <dt>Content</dt>
-          <dd>{memory.content}</dd>
-        </div>
-        <div>
-          <dt>Created at</dt>
-          <dd>
-            <time dateTime={memory.created_at}>
-              {formatCreatedAt(memory.created_at)}
-            </time>
-          </dd>
-        </div>
-        <div>
-          <dt>Importance</dt>
-          <dd>{memory.importance}</dd>
-        </div>
-        {memory.summary ? (
-          <div>
-            <dt>Summary</dt>
-            <dd>{memory.summary}</dd>
-          </div>
-        ) : null}
-      </dl>
+      ) : (
+        <p className="memory-item__content">{memory.content}</p>
+      )}
     </article>
   )
 }

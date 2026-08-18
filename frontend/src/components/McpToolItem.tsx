@@ -4,14 +4,6 @@ interface McpToolItemProps {
   result: McpResult
 }
 
-function formatContent(content: string): string {
-  try {
-    return JSON.stringify(JSON.parse(content), null, 2)
-  } catch {
-    return content
-  }
-}
-
 export function McpToolItem({ result }: McpToolItemProps) {
   return (
     <article className="mcp-tool-item">
@@ -23,7 +15,7 @@ export function McpToolItem({ result }: McpToolItemProps) {
           {result.success ? 'Success' : 'Failed'}
         </span>
       </header>
-      <pre>{formatContent(result.content)}</pre>
+      <pre>{result.content}</pre>
     </article>
   )
 }

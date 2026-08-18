@@ -4,9 +4,9 @@
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 760px) minmax(280px, 360px);
+  grid-template-columns: minmax(0, 760px) minmax(320px, 420px);
   gap: 20px;
-  width: min(1140px, calc(100% - 32px));
+  width: min(1220px, calc(100% - 32px));
   height: min(780px, calc(100vh - 48px));
   margin: 24px auto;
 }
