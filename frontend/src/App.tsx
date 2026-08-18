@@ -104,7 +104,23 @@ function App() {
 
         <section className="chat-area" aria-label="Conversation" aria-live="polite">
           {messages.length === 0 && !isLoading ? (
-            <p className="empty-state">Start a conversation with SupportMind.</p>
+            <div className="welcome-message">
+              <p>
+                Hi! I&apos;m SupportMind — an AI support assistant with long-term
+                memory powered by CockroachDB.
+              </p>
+              <p>I can:</p>
+              <ul>
+                <li>remember previous conversations and user preferences;</li>
+                <li>retrieve long-term memory when it is relevant;</li>
+                <li>inspect CockroachDB databases through MCP;</li>
+                <li>answer technical questions about your database;</li>
+                <li>
+                  integrate with Help Desk, CRM, Slack, Telegram, and other
+                  support platforms.
+                </li>
+              </ul>
+            </div>
           ) : null}
 
           {messages.map((chatMessage) => (

@@ -12,7 +12,7 @@ export function MemoryInspector({
   relevantMemories,
 }: MemoryInspectorProps) {
   return (
-    <div className="memory-inspector" aria-label="Memory inspectors">
+    <>
       <MemorySection
         title="Recent Memory"
         description="Recent conversation context."
@@ -25,6 +25,6 @@ export function MemoryInspector({
         memories={relevantMemories}
         emptyMessage="No relevant memories."
       />
-    </div>
+    </>
   )
 }

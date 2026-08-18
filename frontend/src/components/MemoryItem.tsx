@@ -10,8 +10,14 @@ function formatCreatedAt(createdAt: string): string {
 }
 
 export function MemoryItem({ memory }: MemoryItemProps) {
+  const normalizedRole = memory.role.trim().toLowerCase()
+  const roleClass =
+    normalizedRole === 'user' || normalizedRole === 'assistant'
+      ? normalizedRole
+      : 'other'
+
   return (
-    <article className="memory-item">
+    <article className={`memory-item memory-item--${roleClass}`}>
       <header className="memory-item__header">
         <strong>{memory.role}</strong>
         <time dateTime={memory.created_at}>

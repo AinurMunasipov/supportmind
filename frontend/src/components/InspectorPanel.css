@@ -1,9 +1,10 @@
 .inspector-panel {
   display: grid;
-  grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
 }
 
 .inspector-content-header {
@@ -35,16 +36,16 @@
   text-align: center;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .inspector-panel {
-    height: 720px;
+    height: 520px;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .inspector-panel {
     height: auto;
-    grid-template-rows: auto;
+    grid-template-columns: minmax(0, 1fr);
     padding: 12px;
   }
 }
