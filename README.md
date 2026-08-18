@@ -49,7 +49,7 @@ https://github.com/AinurMunasipov/supportmind
 
 ## Architecture
 
-The diagram below illustrates how SupportMind combines AWS services, CockroachDB persistent memory, semantic retrieval, and CockroachDB Managed MCP to answer user requests.
+The following diagram illustrates how AWS services, CockroachDB, vector search, the CockroachDB Managed MCP Server, and the AI agent interact.
 
 ![Architecture Diagram](docs/architecture.svg)
 
@@ -175,45 +175,15 @@ The backend uses Python, SQLAlchemy, Alembic, Pydantic, Uvicorn, HTTPX, Psycopg,
 
 ```text
 .
+├── backend/
+├── frontend/
+├── docs/
+│   ├── architecture.svg
+│   ├── start.png
+│   └── end.png
 ├── README.md
-├── ARCHITECTURE.md
-├── PROJECT.md
 ├── LICENSE
-├── backend
-│   ├── Dockerfile
-│   ├── alembic.ini
-│   ├── alembic
-│   │   ├── env.py
-│   │   └── versions
-│   │       ├── 20260815_0001_add_memory_importance.py
-│   │       └── 20260815_0002_add_memory_summary.py
-│   ├── app
-│   │   ├── api
-│   │   │   ├── chat.py
-│   │   │   └── memory.py
-│   │   ├── core
-│   │   │   ├── config.py
-│   │   │   └── prompts.py
-│   │   ├── db
-│   │   ├── models
-│   │   ├── repositories
-│   │   ├── schemas
-│   │   ├── services
-│   │   └── main.py
-│   ├── scripts
-│   │   ├── inspect_mcp.py
-│   │   └── test_workflow.py
-│   └── requirements.txt
-└── frontend
-    ├── public
-    ├── src
-    │   ├── api
-    │   ├── components
-    │   ├── types
-    │   ├── App.tsx
-    │   └── main.tsx
-    ├── package.json
-    └── vite.config.ts
+└── .gitignore
 ```
 
 ## Quick Start
