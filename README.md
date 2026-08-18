@@ -176,44 +176,13 @@ The backend uses Python, SQLAlchemy, Alembic, Pydantic, Uvicorn, HTTPX, Psycopg,
 ```text
 .
 ├── README.md
-├── ARCHITECTURE.md
-├── PROJECT.md
 ├── LICENSE
+├── docs
+│   ├── architecture.svg
+│   ├── home.png
+│   └── demo-end.png
 ├── backend
-│   ├── Dockerfile
-│   ├── alembic.ini
-│   ├── alembic
-│   │   ├── env.py
-│   │   └── versions
-│   │       ├── 20260815_0001_add_memory_importance.py
-│   │       └── 20260815_0002_add_memory_summary.py
-│   ├── app
-│   │   ├── api
-│   │   │   ├── chat.py
-│   │   │   └── memory.py
-│   │   ├── core
-│   │   │   ├── config.py
-│   │   │   └── prompts.py
-│   │   ├── db
-│   │   ├── models
-│   │   ├── repositories
-│   │   ├── schemas
-│   │   ├── services
-│   │   └── main.py
-│   ├── scripts
-│   │   ├── inspect_mcp.py
-│   │   └── test_workflow.py
-│   └── requirements.txt
 └── frontend
-    ├── public
-    ├── src
-    │   ├── api
-    │   ├── components
-    │   ├── types
-    │   ├── App.tsx
-    │   └── main.tsx
-    ├── package.json
-    └── vite.config.ts
 ```
 
 ## Quick Start
